@@ -49,8 +49,8 @@ def data_dummy():
 
 def settings(search=None):
     # data_options = get_data_options()
-    # data_options = data_dummy()
-    data_options = []
+    data_options = data_dummy()
+    # data_options = []
     
     # variables
     result = []
