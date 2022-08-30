@@ -300,7 +300,7 @@ def results(search=None):
 def main():
     SEARCH = sys.argv[1] if len(sys.argv) >= 2 else None
     posts  = results(search=SEARCH)
-    data = json.dumps({"rerun": 1,"items": posts }, indent=4) # make "rerun" : 0.2
+    data = json.dumps({"rerun": 1,"items": posts }, indent=4) # make "rerun" : 1
     print(data)
 
 if __name__ == '__main__':

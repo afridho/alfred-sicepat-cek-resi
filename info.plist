@@ -19,8 +19,6 @@
 				<false/>
 			</dict>
 		</array>
-		<key>04A3890A-AC60-4979-A9EF-581E07973DB5</key>
-		<array/>
 		<key>23D77DC2-7403-4A74-8061-F991B258B806</key>
 		<array>
 			<dict>
@@ -731,6 +729,27 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>acceptsfiles</key>
+				<false/>
+				<key>acceptsmulti</key>
+				<integer>0</integer>
+				<key>acceptstext</key>
+				<true/>
+				<key>acceptsurls</key>
+				<false/>
+				<key>name</key>
+				<string>SiCepat cek resi</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.universalaction</string>
+			<key>uid</key>
+			<string>FEB51956-36AE-46DC-8456-9FB74A6BED0B</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
@@ -776,27 +795,6 @@
 			<string>417D6046-A946-484C-93F9-88416E9D2B9E</string>
 			<key>version</key>
 			<integer>3</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>acceptsfiles</key>
-				<false/>
-				<key>acceptsmulti</key>
-				<integer>0</integer>
-				<key>acceptstext</key>
-				<true/>
-				<key>acceptsurls</key>
-				<false/>
-				<key>name</key>
-				<string>SiCepat cek resi</string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.universalaction</string>
-			<key>uid</key>
-			<string>FEB51956-36AE-46DC-8456-9FB74A6BED0B</string>
-			<key>version</key>
-			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -974,29 +972,6 @@
 			<string>C06B109C-A939-42A7-B3BB-09E50B5D593F</string>
 			<key>version</key>
 			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>102</integer>
-				<key>script</key>
-				<string>python save_history.py</string>
-				<key>scriptargtype</key>
-				<integer>1</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>04A3890A-AC60-4979-A9EF-581E07973DB5</string>
-			<key>version</key>
-			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1776,13 +1751,6 @@ touch info.plist</string>
 			<real>895</real>
 			<key>ypos</key>
 			<real>915</real>
-		</dict>
-		<key>04A3890A-AC60-4979-A9EF-581E07973DB5</key>
-		<dict>
-			<key>xpos</key>
-			<real>240</real>
-			<key>ypos</key>
-			<real>415</real>
 		</dict>
 		<key>04F1AA73-9F7A-473D-AC95-7D56085B0609</key>
 		<dict>
