@@ -1,3 +1,1 @@
-good = '21212A'
-
-print(good.isnumeric())
+'003079991982'

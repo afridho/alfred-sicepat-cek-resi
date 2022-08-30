@@ -1,4 +1,4 @@
- #!/usr/bin/python
+#!/usr/bin/python
 # encoding: utf-8
 #
 # Copyright (c) 2022 Ridho Zega
@@ -10,16 +10,18 @@ import json
 import sys
 import requests
 from importlib import reload
+from utils.auto_mark_finished import doCheck
+from utils.crud import fillLastUpdate
 requests.packages.urllib3.disable_warnings()
+from utils import get_data, logo_icon
+import plistlib
 reload(sys)
 
-baseUrl = "https://content-main-api-production.sicepat.com/public/check-awb/"
-
-def web_url(no_resi=None): 
-    url = f"{baseUrl}{no_resi}"
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36'} # use user-agent to prevent from blocked
-    file = requests.get(url, headers=headers, verify=False)
-    return file.json()
+"""Load settings"""
+file_name = "info.plist"
+with open(file_name, 'rb') as g:
+    plist = plistlib.load(g)  
+mark_finished_days = plist["variables"]["auto_mark_finished_days"]
 
 def resi_saved():
     fileJson = f"resi_saved.json"
@@ -27,29 +29,39 @@ def resi_saved():
     resi_saved = json.load(f)
     return resi_saved
 
+
+
 def get_data_options():
     data_resi_file = resi_saved()
+    
+    be = doCheck()
+    for auto_check_resi in data_resi_file:
+        be.compare_time(auto_check_resi['no_resi'], auto_check_resi['last_update'], mark_finished_days) # (no_resi, last_update, days compare)
+    
+    after_resi_file = resi_saved()
     dataExport = []
-    if int(len(data_resi_file)) > 0:
-        data_resi = [x for x in data_resi_file if x['valid']] # only valid parameter to check
-        for resi in data_resi:
-            data_web = web_url(resi['no_resi'])
-            obj = {'data_alfred' : {'product_name' : resi['product_name'], 'valid' : resi['valid'], 'created_at' : resi['created_at']}}
-            data = data_web | obj # merge two dict
-            dataExport.append(data)
+    if int(len(after_resi_file)) > 0:
+        data_resi = [x for x in after_resi_file if x['valid']] # only valid parameter to check
+        if len(data_resi) > 0:
+            for resi in data_resi:
+                data_web = get_data.web_url(resi['no_resi'])
+                obj = {'data_alfred' : {'product_name' : resi['product_name'], 'valid' : resi['valid'], 'last_update' : resi['last_update']}}
+                data = data_web | obj # merge two dict
+                dataExport.append(data)
         # print(json.dumps(dataExport, indent=4))
     return dataExport
     
 def data_dummy():
-    fileJson = f"response_dummy.json"
+    fileJson = f"response_dummy_details.json"
     f = open(fileJson)
     resi_saved = json.load(f)
     return resi_saved
+            
 
-
-def settings(search=None):
-    # data_options = get_data_options()
-    data_options = data_dummy()
+def results(search=None):
+    data_out = get_data_options()
+    data_options = [x for x in data_out if x['data_alfred']['valid']]
+    # data_options = data_dummy()
     # data_options = []
     
     # variables
@@ -72,12 +84,36 @@ def settings(search=None):
             
             if post['sicepat']['status']['code'] == 200 :
                 if post['sicepat']['result']['last_status']['status'] == "DELIVERED":
+                    fillLastUpdate(post['sicepat']['result']['waybill_number'], post['sicepat']['result']['last_status']['date_time'])
                     result.append({
                         # fix this type (look else of this)
                             'title':f"{post['data_alfred']['product_name']}",
-                            'subtitle':f"Delivered✅     |     {post['sicepat']['result']['last_status']['date_time']}",
+                            'subtitle':f"Delivered✅   //   {post['sicepat']['result']['last_status']['date_time']}",
                             'arg':f"{post['sicepat']['result']['waybill_number']}",
+                            'variables' : {
+                                'resi_number' :  f"{post['sicepat']['result']['waybill_number']}",
+                                'logo_icon' : f"{logo_icon.get_icon(post['sicepat']['result']['partner'])}",
+                            },
+                            'icon':{
+                                'path' : f"{logo_icon.get_icon(post['sicepat']['result']['partner'])}"
+                            },
                             'valid':True,
+                            'mods' : {
+                                'alt' : {
+                                    'subtitle' : "Mark Finished (Delivered 🛵)",
+                                    'valid' : True,
+                                    'variables' : {
+                                        'resi_number' :  f"{post['sicepat']['result']['waybill_number']}",
+                                    },
+                                },
+                                'ctrl' : {
+                                    'subtitle' : "Remove Resi Number",
+                                    'valid' : True,
+                                    'variables' : {
+                                        'resi_number' :  f"{post['sicepat']['result']['waybill_number']}",
+                                    },
+                                }
+                            }
                             })
                 else:
                     result.append({
@@ -85,20 +121,38 @@ def settings(search=None):
                             'subtitle':f"{post['sicepat']['result']['waybill_number']}  //  📍{post['sicepat']['result']['sender']} - {post['sicepat']['result']['sender_address']}  //  {post['sicepat']['result']['last_status']['date_time']}",
                             'arg':f"{post['sicepat']['result']['waybill_number']}",
                             'valid':True,
+                            'icon':{
+                                'path' : f"{logo_icon.get_icon(post['sicepat']['result']['partner'])}"
+                            },
+                            'variables' : {
+                                'resi_number' :  f"{post['sicepat']['result']['waybill_number']}",
+                                'logo_icon' : f"{logo_icon.get_icon(post['sicepat']['result']['partner'])}",    
+                            },
                             'text' : {
                                 'largetype' :  f"{post['sicepat']['result']['last_status']['city']}",
                             },
                             'mods' : {
                                 'cmd' : {
-                                    'subtitle' : f"{post['sicepat']['result']['last_status']['city']}"
+                                    'subtitle' : f"{post['sicepat']['result']['last_status']['city']}",
+                                    'valid' : False,
+                                },
+                                'alt' : {
+                                    'subtitle' : "Mark Finished (Delivered 🛵)",
+                                    'arg' : '', # make value False
+                                    'valid' : True,
+                                    'variables' : {
+                                        'resi_number' :  f"{post['sicepat']['result']['waybill_number']}",
+                                    },
+                                },
+                                'ctrl' : {
+                                    'subtitle' : "Remove Resi Number",
+                                    'valid' : True,
+                                    'variables' : {
+                                        'resi_number' :  f"{post['sicepat']['result']['waybill_number']}",
+                                    },
                                 }
                             }
                             }),
-            elif post['sicepat']['status']['code'] == 400:
-                    result.append({
-                                'title':f"Resi Number not found. Please check again.",
-                                'valid': True,
-                                })
             else:
                 result.append({
                         'title': 'Error workflow',
@@ -108,17 +162,32 @@ def settings(search=None):
         
     if len(search) == 12 and len(data_options) != 0 :
         if not check:
-            result.append({
-                        'title': search,
-                        'subtitle':f"{('⌘ Save Resi Number✅') if search.isnumeric() else _invalid_numbers_text }",
-                        'valid': True if search.isnumeric() and len(search) == 12 else False,
-                        'mods':{
-                                'cmd' : {
-                                    'subtitle' : 'Save resi number✓'
+            data = get_data.web_url(search)
+            if data['sicepat']['status']['code'] == 400:
+                result.append({
+                    'title':f"Resi Number not found. Please check again.",
+                    'valid': False,
+                })
+            else:
+                result.append({
+                            'title': search,
+                            'subtitle':f"Receiver: {data['sicepat']['result']['receiver_name']}  //  Sender: 📍{data['sicepat']['result']['sender']}  // valid✅",
+                            'valid': True if search.isnumeric() and len(search) == 12 else False,
+                            'variables' : {
+                                    'resi_number' :  f"{data['sicepat']['result']['waybill_number']}",
+                                    'new_resi' : True,
+                                },
+                            'arg' : f"{data['sicepat']['result']['waybill_number']}",
+                            'mods':{
+                                    'cmd' : {
+                                        'subtitle' : 'Save resi number✓',
+                                        'variables' : {
+                                            'resi_number' : search,
+                                            },
+                                    }
                                 }
-                            }
-                        })
-    elif len(search) > 0 and len(search) != 12 and len(data_options) != 0: 
+                            })
+    elif len(search) > 0 and len(search) != 12 and len(data_options) != 0 and search.isnumeric(): 
             if len(search) > 12:
                 result.append({
                         'title': search,
@@ -132,13 +201,52 @@ def settings(search=None):
                             'valid': False,
                             })
     else:
-        if len(search) == 0 and len(data_options) == 0:
+        if search == '!':
+            
+            result.append({
+                        'title':'Histories (All resi number)',
+                        'subtitle':'',
+                        'icon': {
+                            'path' : 'icon.png',
+                        },
+                        'arg' : 'histories',
+                        'valid':True
+                        })
+            result.append({
+                        'title': 'Settings > Auto mark finished',
+                        'subtitle':'',
+                        'icon': {
+                            'path' : 'icon.png',
+                        },
+                        'arg' : 'settings_auto_mark',
+                        'variables': {
+                            'finished_days' : f"{mark_finished_days if mark_finished_days != '0' else ''}",
+                            'finished_text' : f"{'disabled🚫' if mark_finished_days == '0' else 'days'}"
+                        },
+                        'valid':True
+                        })
+            result.append({
+                        'title': 'Settings > Clear caches data',
+                        'subtitle':'Clear all caches data (Cache folder of this workflow)',
+                        'icon': {
+                            'path' : 'icon.png',
+                        },
+                        'arg' : 'settings_clear_cache',
+                        'valid':True
+                        })
+        if len(search) == 0 and len(data_options) == 0 and search.isnumeric():
             result.append({
                         'title' : f"SiCepat cek resi",
                         'subtitle':f"No saved resi number. Type your no resi and ⌘ to save.",
                         'valid': False,
                         })
-        elif len(search) > 0 and len(search) != 12 and len(data_options) == 0:
+        elif len(search) == 0 and len(data_options) == 0:
+            result.append({
+                    'title' : f"Data empty 🗑️",
+                    'subtitle':f"Add some resi number to check or saved. [ ! for settings ]",
+                    'valid': False,
+                    })
+        elif len(search) > 0 and len(search) != 12 and len(data_options) == 0 and search.isnumeric():
             if len(search) > 12:
                 result.append({
                         'title': search,
@@ -151,28 +259,50 @@ def settings(search=None):
                             'subtitle':f"{(_type_digits + str(len(search)) if search.isnumeric() else _invalid_numbers_text)}",
                             'valid': False,
                             })
-        elif len(search) == 12 or len(data_options) == 0 :
+        elif len(search) > 0 and len(data_options) == 0 and not search.isnumeric() and search != '!':
+            result.append({
+                        'title':f"{_invalid_numbers_text}",
+                        'valid': False,
+                    })
+        elif len(search) == 12 or len(data_options) == 0 and search.isnumeric():
             if not check:
-                result.append({
+                data = get_data.web_url(search)
+                if data['sicepat']['status']['code'] == 400:
+                    result.append({
+                        'title':f"Resi Number not found. Please check again.",
+                        'valid': False,
+                    })
+                else:
+                    result.append({
                             'title': search,
-                            'subtitle':f"{('⌘ Save Resi Number✅') if search.isnumeric() else _invalid_numbers_text }",
+                            'subtitle':f"Receiver: {data['sicepat']['result']['receiver_name']}  //  Sender: 📍{data['sicepat']['result']['sender']}  // valid✅",
                             'valid': True if search.isnumeric() and len(search) == 12 else False,
+                            'arg' : search,
+                            'variables' : {
+                                    'resi_number' :  f"{data['sicepat']['result']['waybill_number']}",
+                                    'new_resi' : True,
+                                },
                             'mods':{
-                                'cmd' : {
-                                    'subtitle' : 'Save resi number✓'
+                                    'cmd' : {
+                                        'subtitle' : 'Save resi number✓',
+                                        'variables' : {
+                                            'resi_number' : search,
+                                            },
+                                    }
                                 }
-                            }
                             })
+
+    
     return result
 
 
 """Run Script Filter."""
 def main():
     SEARCH = sys.argv[1] if len(sys.argv) >= 2 else None
-    posts  = settings(search=SEARCH)
-    data = json.dumps({"items": posts }, indent=4) # make "rerun" : 0.1
+    posts  = results(search=SEARCH)
+    data = json.dumps({"rerun": 1,"items": posts }, indent=4) # make "rerun" : 0.2
     print(data)
 
 if __name__ == '__main__':
     main()
-    # get_data_options()
+    
