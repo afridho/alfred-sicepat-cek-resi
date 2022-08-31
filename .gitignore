@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 
 Cache/
+resi_saved_dev.json
+resi_saved.json
 
 # C extensions
 *.so
