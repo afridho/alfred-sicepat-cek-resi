@@ -12,7 +12,7 @@ def web_url(no_resi=None):
     file_request = requests.get(url, headers=headers, verify=False)
     file = file_request.json()
     
-    if file['sicepat']['status']['code'] == 200:
+    if 'sicepat' in file and file['sicepat']['status']['code'] == 200:
         with open((f"{baseCache}/{no_resi}.json"), 'w', encoding='utf-8') as f:
             json.dump(file, f, ensure_ascii=False, indent=4)   
     return file

@@ -31,12 +31,12 @@ def status_icon(status):
         'IN' : '🔼',
         'OUT': '🔽',
         'ANT' : '🛵',
+        'UNPICK' : '🗃️',
+        'CANCEL' : '😥',
         'DELIVERED' : ''
     }
     status_icon = switcher.get(status, status)
     return (f"{status} {status_icon}")
-
-
     
 def data_dummy():
     fileJson = f"response_dummy.json"
@@ -44,24 +44,20 @@ def data_dummy():
     resi_saved = json.load(f)
     return resi_saved
 
-
 def details(query=None):
     data_options = get_data.from_file(resi_number)
     # data_options = data_dummy()
     # data_options = []
     
-    
     data_result = data_options['sicepat']['result']['track_history']
     posts = sorted(data_result, key=lambda k: k['date_time'], reverse=True)
-    
     
     # variables
     result = []
     
-    
     if 'new_resi' in os.environ and posts[0]['status'] != "DELIVERED":
         result.append({
-                    'title':f"{'Add resi number (type your product name to save ☑︎)' if len(query) == 0 else ('save ' +  query + '✅')}",
+                    'title':f"{'Add resi number » type your product name to save ☑︎' if len(query) == 0 else ('save ' +  query + '✅')}",
                     'subtitle': f"No resi: {resi_number}",
                     'valid': False if len(query) == 0 else True,
                     'arg' : 'save',
@@ -107,8 +103,6 @@ def details(query=None):
                     
             
     return result
-
-
 
 def main():
     SEARCH = sys.argv[1] if len(sys.argv) >= 2 else None

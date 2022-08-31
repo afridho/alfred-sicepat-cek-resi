@@ -10,24 +10,12 @@ import json
 import sys
 import requests
 from importlib import reload
+from utils import crud
 requests.packages.urllib3.disable_warnings()
 reload(sys)
 
-def resi_saved():
-    fileJson = f"resi_saved.json"
-    f = open(fileJson)
-    resi_saved = json.load(f)
-    return resi_saved
-
-    
-def data_dummy():
-    fileJson = f"response_dummy_details.json"
-    f = open(fileJson)
-    resi_saved = json.load(f)
-    return resi_saved
-
 def histories(search=None):
-    data_options = resi_saved()
+    data_options = crud.resi_saved()
 
     # variables
     result = []
@@ -39,7 +27,7 @@ def histories(search=None):
                 continue
             result.append({
                         'title':f"{post['product_name']}",
-                        'subtitle':f"Created at : {post['last_update'] if post['last_update'] else 'None'} || Delivered : {'⛔️' if post['valid'] else '✅'}",
+                        'subtitle':f"Last update: {post['last_update'] if post['last_update'] else 'None'} || Delivered: {'⛔️' if post['valid'] else '✅'}",
                         'arg': f"{post['no_resi']}",
                         'variables' : {
                             'resi_number' :  f"{post['no_resi']}",
