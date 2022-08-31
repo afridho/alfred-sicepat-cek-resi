@@ -226,20 +226,24 @@ def results(search=None):
                 result.append({
                     'title' : f"{_resi_not_found}"
                 })
-    elif len(search) > 0 and len(search) != 12 and len(data_options) != 0 and search.isnumeric() : 
-            if len(search) > 12:
-                result.append({
-                        'title': search,
-                        'subtitle':f"{(_type_digits + str(len(search)) if search.isnumeric() else _invalid_numbers_text)} {(_invalid_max_digit if len(search) > 12 else '')}",
-                        'valid': False,
-                        })
-            else:      
-                if search != '!' or not search.isnumeric(): 
+
+    elif len(search) > 0 and len(search) != 12 and len(data_options) != 0:
+            if search.isnumeric(): 
+                if len(search) > 12:
                     result.append({
-                                'title': search,
-                                'subtitle':f"{(_type_digits + str(len(search)) if search.isnumeric() else _invalid_numbers_text)}",
-                                'valid': False,
-                                })
+                            'title': search,
+                            'subtitle':f"{(_type_digits + str(len(search)) if search.isnumeric() else _invalid_numbers_text)} {(_invalid_max_digit if len(search) > 12 else '')}",
+                            'valid': False,
+                            })
+                else:      
+                    if search != '!' or not search.isnumeric(): 
+                        result.append({
+                                    'title': search,
+                                    'subtitle':f"{(_type_digits + str(len(search)) if search.isnumeric() else _invalid_numbers_text)}",
+                                    'valid': False,
+                                    })
+            else:
+                result.append({'title': _invalid_numbers_text})
     else:
         if len(search) > 0 and len(search) != 12 and len(data_options) == 0 and search.isnumeric():
             if len(search) > 12:
