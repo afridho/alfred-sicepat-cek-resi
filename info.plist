@@ -128,19 +128,6 @@
 				<false/>
 			</dict>
 		</array>
-		<key>57B62801-57E9-46F9-99CB-6427130B402C</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>417D6046-A946-484C-93F9-88416E9D2B9E</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 		<key>6CFCC766-5912-4C23-94F9-825A6FB2C99B</key>
 		<array>
 			<dict>
@@ -946,37 +933,6 @@
 			<string>CA3757C2-983C-4214-9556-BC6905A7A5AA</string>
 			<key>version</key>
 			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>action</key>
-				<integer>0</integer>
-				<key>argument</key>
-				<integer>0</integer>
-				<key>focusedappvariable</key>
-				<false/>
-				<key>focusedappvariablename</key>
-				<string></string>
-				<key>hotkey</key>
-				<integer>12</integer>
-				<key>hotmod</key>
-				<integer>262144</integer>
-				<key>hotstring</key>
-				<string>Q</string>
-				<key>leftcursor</key>
-				<false/>
-				<key>modsmode</key>
-				<integer>0</integer>
-				<key>relatedAppsMode</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.hotkey</string>
-			<key>uid</key>
-			<string>57B62801-57E9-46F9-99CB-6427130B402C</string>
-			<key>version</key>
-			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -1869,13 +1825,6 @@ touch info.plist</string>
 			<real>800</real>
 			<key>ypos</key>
 			<real>695</real>
-		</dict>
-		<key>57B62801-57E9-46F9-99CB-6427130B402C</key>
-		<dict>
-			<key>xpos</key>
-			<real>175</real>
-			<key>ypos</key>
-			<real>390</real>
 		</dict>
 		<key>585681A1-06FA-4BA1-B47B-9FC3FCB5B5C1</key>
 		<dict>

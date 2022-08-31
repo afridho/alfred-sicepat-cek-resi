@@ -144,6 +144,9 @@ def results(search=None):
                                     'variables' : {
                                         'resi_number' :  f"{post['sicepat']['result']['waybill_number']}",
                                     },
+                                },
+                                'cmd':{
+                                    'subtitle' : f"{post['sicepat']['result']['last_status']['receiver_name'] or post['sicepat']['result']['last_status']['city']}"
                                 }
                             }
                             })
